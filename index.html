@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<!-- Taka Hisab. Developed by Nazmul Islam Naaz, nazmulislamnaaz@outlook.com -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#2D3FE0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Taka Hisab">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="author" content="Nazmul Islam Naaz">
+<meta name="description" content="Taka Hisab: personal income, expense and budget tracker.">
+<title>Taka Hisab</title>
+<style>
+:root{--bg:#F5F6F8;--sf:#FFFFFF;--ink:#14171F;--mute:#5F6778;--line:#E3E5EA;--acc:#2D3FE0;--onacc:#fff;--inc:#17795A;--exp:#B4364A;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1115;--sf:#181B22;--ink:#EDEFF4;--mute:#8E96A8;--line:#262A33;--acc:#8794FF;--onacc:#0F1115;--inc:#4CC49B;--exp:#F07A8C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1115;--sf:#181B22;--ink:#EDEFF4;--mute:#8E96A8;--line:#262A33;--acc:#8794FF;--onacc:#0F1115;--inc:#4CC49B;--exp:#F07A8C;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 "Hind Siliguri",system-ui,"Noto Sans Bengali",sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:480px;margin:0 auto;padding:16px 22px 150px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:6px}
+.num{font-variant-numeric:tabular-nums}
+.mute{color:var(--mute)}
+.month{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.month b{font-weight:500}
+.month button{width:40px;height:40px;font-size:22px;color:var(--mute);border-radius:20px}
+.hero small{display:block;color:var(--mute);font-size:14px}
+.hero strong{display:block;font-size:46px;font-weight:600;letter-spacing:-.02em;line-height:1.15;margin-top:2px}
+.stats{display:flex;gap:28px;margin:18px 0 34px}
+.stats div{font-size:14px;color:var(--mute)}
+.stats b{display:block;font-size:18px;font-weight:500;color:var(--ink)}
+h2{font-size:15px;font-weight:600;margin:0 0 6px;display:flex;justify-content:space-between;align-items:baseline}
+h2 button{font-size:14px;font-weight:400;color:var(--acc)}
+section{margin-bottom:32px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.row:last-child{border-bottom:0}
+.row .l{min-width:0}
+.row .l span{display:block;font-size:13px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.in{color:var(--inc)}.out{color:var(--exp)}
+.bar{height:4px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ink);border-radius:2px}
+.bar i.over{background:var(--exp)}
+.b{padding:11px 0}
+.b .top{display:flex;justify-content:space-between;gap:12px}
+.day{font-size:13px;color:var(--mute);margin:20px 0 0}
+.empty{color:var(--mute);padding:28px 0;text-align:center}
+input,select{font:inherit;color:var(--ink);background:var(--sf);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
+.mini{width:110px;text-align:right}
+.link{color:var(--acc);font-size:15px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--sf);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav div{display:flex;width:100%;max-width:480px}
+nav button{flex:1;padding:14px 0 13px;font-size:14px;color:var(--mute)}
+nav button[aria-current=page]{color:var(--ink);font-weight:600;box-shadow:inset 0 2px 0 var(--ink)}
+.fab{position:fixed;right:max(22px,calc(50% - 218px));bottom:calc(72px + env(safe-area-inset-bottom,0px));width:56px;height:56px;border-radius:28px;background:var(--acc);color:var(--onacc);font-size:30px;line-height:1;box-shadow:0 4px 14px rgba(20,23,31,.25)}
+.scrim{position:fixed;inset:0;background:rgba(10,12,18,.45);opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:480px;margin:0 auto;background:var(--bg);border-radius:20px 20px 0 0;padding:20px 22px calc(22px + env(safe-area-inset-bottom,0px));transform:translateY(105%);transition:transform .24s ease;z-index:5}
+.open .scrim{opacity:1;pointer-events:auto}.open .sheet{transform:none}
+.seg{display:flex;background:var(--line);border-radius:10px;padding:3px;margin-bottom:16px}
+.seg button{flex:1;padding:8px;border-radius:8px;color:var(--mute)}
+.seg button[aria-pressed=true]{background:var(--sf);color:var(--ink);font-weight:500}
+.amt{font-size:34px;font-weight:600;border:0;background:none;padding:0 0 8px;border-bottom:1px solid var(--line);border-radius:0;margin-bottom:14px}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.err{color:var(--exp);font-size:14px;min-height:20px}
+.save{width:100%;padding:13px;border-radius:12px;background:var(--acc);color:var(--onacc);font-weight:600;margin-top:6px}
+.del{display:block;margin:12px auto 0;color:var(--exp);font-size:14px}
+.sheet[inert]{visibility:hidden;transition:transform .24s ease,visibility 0s .24s}
+body[data-auth=out] main,body[data-auth=out] nav,body[data-auth=out] .fab,body[data-auth=out] #ov{display:none}
+#auth{display:none;max-width:400px;margin:0 auto;padding:64px 24px 40px}
+body[data-auth=out] #auth{display:block}
+#auth h1{font-size:30px;font-weight:600;letter-spacing:-.02em;margin:0 0 6px}
+#auth p{color:var(--mute);margin:0 0 22px}
+#auth label{display:block;font-size:14px;color:var(--mute);margin:14px 0 5px}
+#auth .save:disabled{opacity:.6}
+.link.out{color:var(--exp)}
+.fine{font-size:13px;color:var(--mute)}
+.stack{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.stack input{max-width:280px}
+.about{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.about a{text-decoration:none;word-break:break-all}
+.about b{font-weight:600}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,12px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;display:flex;gap:18px;align-items:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast button{font-weight:600;text-decoration:underline}
+.chips{display:flex;gap:8px;margin:-10px 0 6px}
+.chips button{padding:7px 14px;border-radius:16px;border:1px solid var(--line);font-size:14px;color:var(--mute)}
+.chips button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.accs{display:flex;gap:24px;overflow-x:auto;margin:-14px 0 32px;padding-bottom:4px}
+.accs div{font-size:13px;color:var(--mute);white-space:nowrap}
+.accs b{display:block;font-size:15px;font-weight:500;color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.sheet,.scrim,.toast{transition:none}}
+</style>
+</head>
+<body data-auth="out">
+<main id="app"></main>
+<div id="auth"></div>
+<noscript><p style="padding:24px">Taka Hisab needs JavaScript to run.</p></noscript>
+<button class="fab" id="fab" aria-label="Add transaction">+</button>
+<div class="toast" id="toast" role="status"></div>
+<nav><div id="nav"></div></nav>
+<div id="ov">
+  <div class="scrim" id="scrim"></div>
+  <form class="sheet" id="sheet" inert role="dialog" aria-modal="true" aria-label="Transaction">
+    <div class="seg" id="seg">
+      <button type="button" data-type="Expense" aria-pressed="true">Expense</button>
+      <button type="button" data-type="Income" aria-pressed="false">Income</button>
+    </div>
+    <input class="amt num" id="f-amt" inputmode="decimal" placeholder="৳0" autocomplete="off" aria-label="Amount">
+    <div class="g"><select id="f-cat" aria-label="Category"></select><select id="f-acc" aria-label="Account"></select></div>
+    <div class="g"><input type="date" id="f-date" aria-label="Date"><input id="f-desc" placeholder="Note (optional)" aria-label="Note" autocomplete="off"></div>
+    <div class="err" id="err" role="alert"></div>
+    <button type="submit" class="save" id="save">Add expense</button>
+    <button type="button" class="del" id="del" hidden>Delete transaction</button>
+  </form>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const money = n => (n < 0 ? '−' : '') + '৳' + Math.abs(Math.round(n)).toLocaleString('en-IN');
+const pad = n => String(n).padStart(2, '0');
+const num = v => parseFloat(String(v).replace(/[০-৯]/g, d => '০১২৩৪৫৬৭৮৯'.indexOf(d)).replace(/[,৳\s]/g, ''));
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+const fd = s => new Date(s + 'T00:00:00').toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+
+// Defaults mirror the Excel sheet: same categories, accounts, sample budgets and opening balances.
+const DEFAULT = () => ({
+  inc: ['Salary','Business','Freelance','Gift/Bonus','Other Income'],
+  exp: ['Food & Bazar','House Rent','Utility Bills','Transport','Mobile/Internet','Shopping','Health','Education','Family Support','Entertainment','Savings/Investment','Other Expense'],
+  acc: ['Cash','bKash','Nagad','Bank'],
+  bud: {'Food & Bazar':12000,'House Rent':15000,'Utility Bills':3000,'Transport':3000,'Mobile/Internet':1000,'Shopping':3000,'Health':1500,'Education':2000,'Family Support':3000,'Entertainment':1500,'Savings/Investment':5000,'Other Expense':1000},
+  open: {'Cash':2000,'bKash':1500,'Nagad':500,'Bank':25000},
+  tx: []
+});
+let S = DEFAULT(), tab = 'home', now = new Date(), Y = now.getFullYear(), M = now.getMonth() + 1;
+let sheet = {id: null, type: 'Expense'}, delArmed = false, dbDoc = null, timer = null, flt = 'All', tt = null;
+
+function save() {
+  if (!U) return;
+  if (!ls.set('taka-hisab:' + U, JSON.stringify(S))) toast('Could not save on this device. Back up your data now.');
+  if (dbDoc) { clearTimeout(timer); timer = setTimeout(() => dbDoc.set(S).catch(() => {}), 600); }
+}
+function adopt(d) {
+  // Accepts data from storage or a backup file; rebuilds it so malformed or hostile files cannot break the app.
+  d = d && typeof d === 'object' ? d : {};
+  const D = DEFAULT(), bd = d.bud && typeof d.bud === 'object' ? d.bud : {}, op = d.open && typeof d.open === 'object' ? d.open : {}, list = (a, f) => Array.isArray(a) && a.length ? a.map(x => String(x).slice(0, 60)) : f;
+  const o = {inc: list(d.inc, D.inc), exp: list(d.exp, D.exp), acc: list(d.acc, D.acc), bud: {}, open: {}, tx: []};
+  o.exp.forEach(c => { o.bud[c] = c in bd ? Math.max(0, +bd[c] || 0) : (D.bud[c] || 0); });
+  o.acc.forEach(a => { o.open[a] = a in op ? (+op[a] || 0) : (D.open[a] || 0); });
+  (Array.isArray(d.tx) ? d.tx : []).forEach((t, i) => {
+    if (t && /^\d{4}-\d{2}-\d{2}$/.test(t.d) && (t.type === 'Income' || t.type === 'Expense') && isFinite(+t.amt) && +t.amt > 0)
+      o.tx.push({id: Math.round(+t.id) || Date.now() + i, type: t.type, cat: String(t.cat || '').slice(0, 60), acc: String(t.acc || o.acc[0]).slice(0, 60), d: t.d, desc: String(t.desc || '').slice(0, 120), amt: +t.amt});
+  });
+  S = o;
+}
+
+const key = () => Y + '-' + pad(M);
+const inMonth = () => S.tx.filter(t => t.d.startsWith(key()));
+const sum = (a, type) => a.filter(t => t.type === type).reduce((x, t) => x + t.amt, 0);
+const balOf = a => S.open[a] + S.tx.filter(t => t.acc === a).reduce((x, t) => x + (t.type === 'Income' ? t.amt : -t.amt), 0);
+const spentBy = (list, c) => list.filter(t => t.type === 'Expense' && t.cat === c).reduce((x, t) => x + t.amt, 0);
+
+function txRow(t) {
+  return `<button class="row" data-edit="${t.id}"><span class="l">${esc(t.cat)}<span>${esc([t.desc, t.acc].filter(Boolean).join(' · '))}</span></span>
+  <b class="num ${t.type === 'Income' ? 'in' : 'out'}" style="font-weight:500">${t.type === 'Income' ? '+' : '−'}${money(t.amt).replace('−','')}</b></button>`;
+}
+function barRow(c, list) {
+  const b = S.bud[c] || 0, s = spentBy(list, c), p = b ? s / b : 0;
+  return `<div class="b"><div class="top"><span>${esc(c)}</span><span class="num mute">${money(s)} of ${money(b)}</span></div>
+  <div class="bar"><i class="${p > 1 ? 'over' : ''}" style="width:${Math.min(100, p * 100)}%"></i></div></div>`;
+}
+const monthNav = () => `<div class="month"><button data-m="-1" aria-label="Previous month">‹</button><b>${MN[M - 1]} ${Y}</b><button data-m="1" aria-label="Next month">›</button></div>`;
+
+const views = {
+  home() {
+    const l = inMonth(), inc = sum(l, 'Income'), exp = sum(l, 'Expense'), net = inc - exp;
+    const total = S.acc.reduce((x, a) => x + balOf(a), 0);
+    const top = S.exp.filter(c => S.bud[c] > 0 && spentBy(l, c) > 0).sort((a, b) => spentBy(l, b) / S.bud[b] - spentBy(l, a) / S.bud[a]).slice(0, 4);
+    const recent = [...l].sort((a, b) => b.d.localeCompare(a.d) || b.id - a.id).slice(0, 5);
+    return monthNav() + `<div class="hero"><small>Total balance</small><strong class="num">${money(total)}</strong></div>
+    <div class="stats num"><div>Income<b class="in">${money(inc)}</b></div><div>Spent<b>${money(exp)}</b></div><div>Saved${inc ? ' · ' + Math.round(net / inc * 100) + '%' : ''}<b>${money(net)}</b></div></div>
+    <div class="accs num">${S.acc.map(a => `<div>${esc(a)}<b>${money(balOf(a))}</b></div>`).join('')}</div>
+    <section><h2>Budget<button data-nav="bud">See all</button></h2>${top.length ? top.map(c => barRow(c, l)).join('') : '<div class="empty">Spending against your budget will show here.</div>'}</section>
+    <section><h2>Recent<button data-nav="act">See all</button></h2>${recent.length ? recent.map(txRow).join('') : '<div class="empty">No transactions this month.<br>Tap + to add your first one.</div>'}</section>`;
+  },
+  act() {
+    const l = [...inMonth()].filter(t => flt === 'All' || t.type === flt).sort((a, b) => b.d.localeCompare(a.d) || b.id - a.id);
+    const chips = `<div class="chips">${['All','Expense','Income'].map(f => `<button data-flt="${f}" aria-pressed="${flt === f}">${f}</button>`).join('')}</div>`;
+    if (!l.length) return monthNav() + chips + '<div class="empty">Nothing here yet.<br>Tap + to add a transaction.</div>';
+    let out = monthNav() + chips, last = '';
+    l.forEach(t => { if (t.d !== last) { out += `<div class="day">${fd(t.d)}</div>`; last = t.d; } out += txRow(t); });
+    return out;
+  },
+  bud() {
+    const l = inMonth(), tb = S.exp.reduce((x, c) => x + (S.bud[c] || 0), 0), ts = sum(l, 'Expense');
+    return monthNav() + `<section><h2>Monthly budget</h2><div class="mute num" style="margin-bottom:10px">${money(ts)} spent of ${money(tb)}</div>
+    ${S.exp.map((c, i) => `<div class="row" style="display:block"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><label for="b-${i}">${esc(c)}</label>
+    <input class="mini num" id="b-${i}" inputmode="numeric" data-bud="${esc(c)}" value="${S.bud[c] || ''}" placeholder="৳0" aria-label="Budget for ${esc(c)}"></div>
+    ${barRow(c, l).replace(/<div class="top">.*?<\/div>/s, `<div class="top"><span class="num mute" style="font-size:13px">${money(spentBy(l, c))} spent</span><span class="num mute" style="font-size:13px">${S.bud[c] ? Math.round(spentBy(l, c) / S.bud[c] * 100) + '%' : ''}</span></div>`)}</div>`).join('')}</section>`;
+  },
+  acc() {
+    return `<div class="month"><b>Accounts</b></div>` + S.acc.map(a => `<div class="row"><span class="l">${esc(a)}<span>Opening balance</span></span>
+    <span style="text-align:right"><b class="num" style="font-weight:600">${money(balOf(a))}</b><br>
+    <input class="mini num" style="margin-top:4px" inputmode="numeric" data-open="${esc(a)}" value="${S.open[a]}" aria-label="Opening balance for ${esc(a)}"></span></div>`).join('') +
+    `<div style="margin-top:28px;display:flex;flex-direction:column;align-items:flex-start;gap:12px">
+    <button class="link" id="backup">Back up data (JSON)</button>
+    <button class="link" id="pick">Restore from backup</button><input type="file" id="restore" accept=".json,application/json" hidden>
+    <button class="link" id="export">Export transactions (CSV)</button></div>
+    <p class="mute" style="font-size:13px;margin-top:20px">Your data is saved on this device and works offline. Back up now and then, because clearing browser data erases it. Balance = opening balance + income − expenses, same as your sheet.</p>` + accountBox() + aboutBox();
+  }
+};
+
+function render() {
+  delArmed2 = false;
+  $('#app').innerHTML = views[tab]();
+  $('#nav').innerHTML = [['home','Overview'],['act','Activity'],['bud','Budget'],['acc','Accounts']]
+    .map(([k, n]) => `<button data-nav="${k}" ${tab === k ? 'aria-current="page"' : ''}>${n}</button>`).join('');
+}
+
+function fill(sel, list, val) { sel.innerHTML = list.map(x => `<option${x === val ? ' selected' : ''}>${esc(x)}</option>`).join(''); }
+function setType(type, cat) {
+  sheet.type = type;
+  document.querySelectorAll('#seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.type === type));
+  fill($('#f-cat'), type === 'Income' ? S.inc : S.exp, cat);
+  $('#save').textContent = sheet.id ? 'Save changes' : 'Add ' + type.toLowerCase();
+}
+function openSheet(id) {
+  const t = id ? S.tx.find(x => x.id === id) : null;
+  sheet.id = id; delArmed = false; $('#err').textContent = '';
+  fill($('#f-acc'), S.acc, t ? t.acc : S.acc[0]);
+  setType(t ? t.type : 'Expense', t && t.cat);
+  $('#f-amt').value = t ? t.amt : ''; $('#f-date').value = t ? t.d : today(); $('#f-desc').value = t ? t.desc : '';
+  $('#del').hidden = !t; $('#del').textContent = 'Delete transaction';
+  $('#sheet').removeAttribute('inert'); $('#ov').classList.add('open'); setTimeout(() => $('#f-amt').focus(), 120);
+}
+const closeSheet = () => { $('#ov').classList.remove('open'); $('#sheet').setAttribute('inert', ''); };
+function toast(msg, undo) {
+  const el = $('#toast');
+  el.innerHTML = `<span>${msg}</span>` + (undo ? '<button type="button" id="undo">Undo</button>' : '');
+  el.classList.add('show');
+  if (undo) $('#undo').onclick = () => { undo(); save(); render(); el.classList.remove('show'); };
+  clearTimeout(tt); tt = setTimeout(() => el.classList.remove('show'), 4500);
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.dataset.nav) { tab = t.dataset.nav; render(); window.scrollTo(0, 0); }
+  else if (t.dataset.m) { M += +t.dataset.m; if (M > 12) { M = 1; Y++; } if (M < 1) { M = 12; Y--; } render(); }
+  else if (t.dataset.edit) openSheet(+t.dataset.edit);
+  else if (t.dataset.flt) { flt = t.dataset.flt; render(); }
+  else if (t.dataset.type) setType(t.dataset.type);
+  else if (t.id === 'fab') openSheet(null);
+  else if (t.id === 'export') exportCsv();
+  else if (t.id === 'backup') saveFile('taka-hisab-backup-' + today() + '.json', JSON.stringify(S));
+  else if (t.id === 'pick') $('#restore').click();
+});
+$('#scrim').onclick = closeSheet;
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+$('#sheet').onsubmit = e => {
+  e.preventDefault();
+  const amt = num($('#f-amt').value);
+  if (!(amt > 0)) { $('#err').textContent = 'Enter an amount greater than zero.'; $('#f-amt').focus(); return; }
+  const rec = {type: sheet.type, cat: $('#f-cat').value, acc: $('#f-acc').value, d: $('#f-date').value || today(), desc: $('#f-desc').value.trim(), amt};
+  const isNew = !sheet.id, nid = Date.now();
+  if (isNew) S.tx.push(Object.assign({id: nid}, rec)); else Object.assign(S.tx.find(x => x.id === sheet.id), rec);
+  const d = new Date(rec.d + 'T00:00:00'); Y = d.getFullYear(); M = d.getMonth() + 1;
+  save(); closeSheet(); render();
+  toast(isNew ? 'Transaction added' : 'Changes saved', isNew ? () => { S.tx = S.tx.filter(x => x.id !== nid); } : null);
+};
+$('#del').onclick = () => {
+  if (!delArmed) { delArmed = true; $('#del').textContent = 'Tap again to delete'; return; }
+  const gone = S.tx.find(x => x.id === sheet.id);
+  S.tx = S.tx.filter(x => x.id !== sheet.id); save(); closeSheet(); render();
+  toast('Transaction deleted', () => { S.tx.push(gone); });
+};
+$('#app').addEventListener('change', e => {
+  if (e.target.id === 'restore') return restore(e.target.files[0]);
+  const v = Math.max(0, num(e.target.value) || 0);
+  if (e.target.dataset.bud) S.bud[e.target.dataset.bud] = v;
+  else if (e.target.dataset.open) S.open[e.target.dataset.open] = v; else return;
+  save(); render();
+});
+
+async function exportCsv() {
+  const q = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const rows = [['Date','Type','Category','Account','Description','Amount']].concat(
+    [...S.tx].sort((a, b) => a.d.localeCompare(b.d)).map(t => [t.d, t.type, t.cat, t.acc, t.desc, t.amt]));
+  const csv = '\ufeff' + rows.map(r => r.map(q).join(',')).join('\n');
+  await saveFile('taka-hisab.csv', csv);
+}
+async function saveFile(name, data) {
+  try {
+    const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
+    if (dl) { await dl.save({filename: name, data}); return; }
+  } catch (e) { if (e && e.code === 'declined') return; }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], {type: 'text/plain'}));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+function restore(f) {
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (!d || !Array.isArray(d.tx)) throw new Error('bad');
+      const prev = S; adopt(d); save(); render();
+      toast('Backup restored', () => { S = prev; });
+    } catch (e) { toast('That file is not a Taka Hisab backup.'); }
+  };
+  r.readAsText(f);
+}
+window.addEventListener('offline', () => toast('You are offline. Everything still works.'));
+window.addEventListener('online', () => { toast('Back online.'); if (dbDoc) save(); });
+
+// ---- Accounts: stored on this device, passwords are hashed (PBKDF2) and never kept in plain text ----
+const ls = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+const users = () => { try { return JSON.parse(ls.get('th-users') || '{}'); } catch (e) { return {}; } };
+const b64 = b => btoa(String.fromCharCode(...new Uint8Array(b)));
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function hashPw(pw, salt) {
+  if (!(window.crypto && crypto.subtle)) throw new Error('nocrypto');
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveBits']);
+  return b64(await crypto.subtle.deriveBits({name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 150000}, k, 256));
+}
+let U = null, mode = 'in', fails = 0, delArmed2 = false;
+
+function authView(msg) {
+  const first = !Object.keys(users()).length;
+  if (first) mode = 'up';
+  const up = mode === 'up';
+  $('#auth').innerHTML = `<h1>Taka Hisab</h1><p>${up ? 'Create an account to keep your hisab private on this device.' : 'Sign in to continue.'}</p>
+  <form id="authform">
+    ${up ? '<label for="a-name">Your name</label><input id="a-name" autocomplete="name" maxlength="40">' : ''}
+    <label for="a-user">Username</label><input id="a-user" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="30">
+    <label for="a-pw">Password</label><input id="a-pw" type="password" autocomplete="${up ? 'new-password' : 'current-password'}">
+    <div class="err" id="a-err" role="alert">${esc(msg || '')}</div>
+    <button class="save" type="submit">${up ? 'Create account' : 'Sign in'}</button>
+  </form>
+  ${first ? '' : `<p style="margin:22px 0 0;text-align:center"><button class="link" id="a-switch">${up ? 'I already have an account' : 'Create a new account'}</button></p>`}
+  <p class="fine" style="margin-top:16px">${up ? 'Passwords cannot be recovered, so back up your data often from the Accounts tab.' : '<button class="link" id="a-forgot" style="font-size:13px">Forgot password?</button>'}</p>
+  <p class="fine" style="margin-top:36px;text-align:center">Developed by Nazmul Islam Naaz</p>`;
+  document.body.dataset.auth = 'out';
+  setTimeout(() => ($('#a-name') || $('#a-user')).focus(), 60);
+}
+function enter(un) {
+  U = un; ls.set('th-session', un); S = DEFAULT(); tab = 'home'; dbDoc = null; delArmed2 = false;
+  try { const raw = ls.get('taka-hisab:' + un); if (raw) adopt(JSON.parse(raw)); } catch (e) {}
+  document.body.dataset.auth = 'in'; $('#auth').innerHTML = '';
+  render(); window.scrollTo(0, 0); syncCloud(un);
+}
+function signOut() {
+  if (dbDoc) dbDoc.set(S).catch(() => {});
+  clearTimeout(timer); U = null; mode = 'in'; dbDoc = null; ls.del('th-session'); closeSheet(); authView();
+}
+function aboutBox() {
+  return `<section style="margin-top:36px"><h2>About</h2><div class="about">
+    <div><b>Taka Hisab</b> <span class="mute">Version 1.2</span></div>
+    <div class="mute">Developed by <b style="color:var(--ink)">Nazmul Islam Naaz</b></div>
+    <a class="link" href="mailto:nazmulislamnaaz@outlook.com?subject=Taka%20Hisab%20feedback">nazmulislamnaaz@outlook.com</a>
+    <div class="fine" style="margin-top:6px">Questions, bug reports and ideas are welcome.</div></div></section>`;
+}
+function accountBox() {
+  const u = users()[U] || {};
+  return `<section style="margin-top:36px"><h2>Account</h2><div class="stack">
+    <div class="mute">Signed in as ${esc(u.name || U)} (@${esc(U)})</div>
+    <button class="link" id="signout">Sign out</button>
+    <input type="password" id="pw-old" placeholder="Current password" autocomplete="current-password" aria-label="Current password">
+    <input type="password" id="pw-new" placeholder="New password (6+ characters)" autocomplete="new-password" aria-label="New password">
+    <button class="link" id="chpw">Change password</button>
+    <div class="err" id="pw-msg" role="status"></div>
+    <button class="link out" id="delacct">Delete this account</button></div></section>`;
+}
+async function changePw() {
+  const msg = t => { $('#pw-msg').textContent = t; }, all = users(), u = all[U], o = $('#pw-old').value, n = $('#pw-new').value;
+  if (n.length < 6) return msg('New password must be at least 6 characters.');
+  try {
+    if (await hashPw(o, unb64(u.salt)) !== u.hash) return msg('Current password is wrong.');
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    all[U] = Object.assign(u, {salt: b64(salt), hash: await hashPw(n, salt)});
+    ls.set('th-users', JSON.stringify(all));
+    $('#pw-old').value = ''; $('#pw-new').value = ''; msg(''); toast('Password changed');
+  } catch (e) { msg('Could not change the password.'); }
+}
+document.addEventListener('submit', async e => {
+  if (e.target.id !== 'authform') return;
+  e.preventDefault();
+  const un = $('#a-user').value.trim().toLowerCase(), pw = $('#a-pw').value, err = m => { $('#a-err').textContent = m; };
+  if (!/^[a-z0-9_.]{3,30}$/.test(un)) return err('Username: 3 to 30 letters, numbers, dot or underscore.');
+  if (pw.length < 6) return err('Password must be at least 6 characters.');
+  const btn = e.target.querySelector('.save'); btn.disabled = true;
+  try {
+    const all = users();
+    if (mode === 'up') {
+      if (all[un]) return err('That username is taken.');
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      all[un] = {name: ($('#a-name').value.trim() || un), salt: b64(salt), hash: await hashPw(pw, salt)};
+      ls.set('th-users', JSON.stringify(all));
+      const old = ls.get('taka-hisab');
+      if (old && Object.keys(all).length === 1) { ls.set('taka-hisab:' + un, old); ls.del('taka-hisab'); }
+      enter(un);
+    } else {
+      const u = all[un];
+      if (!u || await hashPw(pw, unb64(u.salt)) !== u.hash) { fails++; await new Promise(r => setTimeout(r, Math.min(fails, 5) * 700)); return err('Wrong username or password.'); }
+      fails = 0; enter(un);
+    }
+  } catch (x) { err(x.message === 'nocrypto' ? 'This browser cannot secure passwords here. Open the app over https.' : 'Something went wrong. Try again.'); }
+  finally { btn.disabled = false; }
+});
+document.addEventListener('click', e => {
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.id === 'a-switch') { mode = mode === 'up' ? 'in' : 'up'; authView(); }
+  else if (t.id === 'a-forgot') $('#a-err').textContent = 'Passwords cannot be reset. Create a new account, then restore your backup from Accounts, Restore.';
+  else if (t.id === 'signout') signOut();
+  else if (t.id === 'chpw') changePw();
+  else if (t.id === 'delacct') {
+    if (!delArmed2) { delArmed2 = true; t.textContent = 'Tap again to delete this account and all its data'; return; }
+    const all = users(), d = dbDoc; delete all[U]; ls.set('th-users', JSON.stringify(all)); ls.del('taka-hisab:' + U);
+    dbDoc = null; clearTimeout(timer); Promise.resolve(d && d.delete && d.delete()).catch(() => {});
+    signOut();
+  }
+});
+
+// Claude-hosted copy only: also keep a private synced copy per account when available.
+async function syncCloud(un) {
+  try {
+    if (!window.claude || !window.claude.use) return;
+    const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    if (!db || !user) return;
+    const id = await user.id(); if (!id) return;
+    const ref = db.collection('data/users/' + id).doc(Object.keys(users())[0] === un ? 'ledger' : 'ledger-' + un);
+    const snap = await ref.get();
+    if (U !== un) return;
+    if (snap.exists) { adopt(snap.data()); render(); }
+    dbDoc = ref;
+    if (!snap.exists && S.tx.length) save();
+  } catch (e) {}
+}
+
+const sess = ls.get('th-session');
+if (sess && users()[sess]) enter(sess); else authView();
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
